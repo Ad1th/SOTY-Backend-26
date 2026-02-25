@@ -5,7 +5,12 @@ require("dotenv").config();
 
 const generateAccessToken = (user) => {
   return jwt.sign(
-    { username: user.username, id: user._id, teamname: user.teamname },
+    {
+      username: user.username,
+      id: user._id,
+      teamname: user.teamname,
+      isAdmin: user.isAdmin,
+    },
     process.env.ACCESS_TOKEN_SECRET,
     {
       expiresIn: process.env.ACCESS_TOKEN_EXPIRY || "45m",

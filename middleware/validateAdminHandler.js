@@ -14,7 +14,16 @@ const isAdmin = async (req, res, next) => {
 
     token = authHeader.split(" ")[1];
 
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    } catch (err) {
+      if (err.name === "TokenExpiredError") {
+        return res.status(401).json({ message: "Token expired" });
+      }
+      return res.status(401).json({ message: "Invalid token" });
+    }
+
     const user = await userModel.findById(decoded.id);
 
     if (!user) {
@@ -27,8 +36,8 @@ const isAdmin = async (req, res, next) => {
       res.status(403).json({ message: "Access Forbidden: Admin only" });
     }
   } catch (error) {
+    console.error("Admin Validation Error:", error);
     res.status(500).json({ error: "Internal server error" });
-    console.log(error);
   }
 };
 
