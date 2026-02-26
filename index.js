@@ -23,7 +23,8 @@ app.use(express.json());
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://soty-frontend-2026.vercel.app"
+  "https://soty-frontend-2026.vercel.app",
+  "https://soty-frontend-26-eight.vercel.app"
 ];
 
 app.use(
