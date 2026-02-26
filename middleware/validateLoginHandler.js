@@ -3,8 +3,7 @@ const jwt = require("jsonwebtoken");
 
 const isSingleLogin = async (req, res, next) => {
   try {
-    let token;
-    let authHeader = req.headers.authorization || req.headers.Authorization;
+    const authHeader = req.headers.authorization || req.headers.Authorization;
 
     if (!authHeader) {
       return res
@@ -12,25 +11,26 @@ const isSingleLogin = async (req, res, next) => {
         .json({ message: "Authorization header is missing." });
     }
 
-    token = authHeader.split(" ")[1];
+    const token = authHeader.split(" ")[1];
 
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
     const user = await UserModel.findById(decoded.id);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found.(single user)" });
+      return res.status(404).json({ message: "User not found." });
     }
 
-    if (user.prevAccessToken.includes(token)) {
+    if (decoded.tokenVersion !== user.tokenVersion) {
       return res.status(401).json({
         message:
-          "Multiple logins detected (someone logged in form new device/browser/tab ). So Please log in again.",
+          "Session expired. Logged in from another device/browser. Please login again.",
       });
     }
     next();
   } catch (error) {
     console.log(error);
-    res.status(500).json(error.message);
+    return res.status(401).json({ message: "Invalid or expired token." });
   }
 };
 
