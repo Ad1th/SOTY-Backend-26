@@ -10,7 +10,6 @@ const generateAccessToken = (user) => {
       id: user._id,
       teamname: user.teamname,
       isAdmin: user.isAdmin,
-      tokenVersion: user.tokenVersion,
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
@@ -89,7 +88,7 @@ const loginUser = async (req, res) => {
         message: "Incorrect password",
       });
     }
-    user.tokenVersion += 1;
+
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
